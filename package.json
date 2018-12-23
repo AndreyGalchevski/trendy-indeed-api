@@ -9,7 +9,8 @@
   "author": "Andrey Galchevski",
   "license": "ISC",
   "engines": {
-    "node": "8.12.0"
+    "node": "8.12.0",
+    "npm": "6.4.1"
   },
   "dependencies": {
     "axios": "^0.18.0",
