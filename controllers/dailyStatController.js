@@ -1,4 +1,5 @@
 const DailyStat = require('../models/DailyStat');
+const Country = require('../models/Country');
 
 const getRawStats = async () => {
   try {
@@ -10,6 +11,8 @@ const getRawStats = async () => {
 };
 
 const getMonthlyAverages = async (year, country) => {
+  const countryName = (await Country.findOne({code: country})).name;
+
   try {
     const stats = await DailyStat.aggregate([
       {
@@ -37,9 +40,11 @@ const getMonthlyAverages = async (year, country) => {
       {
         $group: {
           _id: { 
-            $concat: [ 
+            $concat: [
+              { $substr:[year, 0, -1 ] }, 
+              '-',              
               { $substr:["$createdAtMonth", 0, -1 ] }, 
-              '-', 
+              '-',
               '$country', 
               '-', 
               '$technology' 
@@ -53,7 +58,7 @@ const getMonthlyAverages = async (year, country) => {
       },
       {
         $match: {
-          country: country
+          country: countryName
         }
       }
     ]);
@@ -63,4 +68,51 @@ const getMonthlyAverages = async (year, country) => {
   }
 };
 
-module.exports = { getRawStats, getMonthlyAverages };
+const getYearlyAverages = async year => {
+  try {
+    const stats = await DailyStat.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(year, 1, 1),
+            $lte: new Date(year, 12, 31)
+          }
+        }
+      },
+      { 
+        $unwind: { path: "$countries"} 
+      }, 
+      { 
+        $unwind: { path: "$countries.technologies"} 
+      },
+      {
+        $project: {
+          country: '$countries.name',
+          technology: '$countries.technologies.name',
+          jobCount: '$countries.technologies.jobCount'
+        }
+      },
+      {
+        $group: {
+          _id: { 
+            $concat: [ 
+              { $substr:[year, 0, -1 ] }, 
+              '-', 
+              '$country', 
+              '-', 
+              '$technology' 
+            ] 
+          },
+          country: { $first: '$country' },
+          technology: { $first: '$technology' },
+          average: { $avg: '$jobCount' }
+        }
+      }
+    ]);
+    return stats;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { getRawStats, getMonthlyAverages, getYearlyAverages };

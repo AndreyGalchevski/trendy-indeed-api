@@ -23,10 +23,13 @@ app.use(cookieParser());
 
 app.post('/api/countries', routeHandlers.countries.create);
 app.get('/api/countries', routeHandlers.countries.getAll);
+
 app.post('/api/technologies', routeHandlers.technologies.create);
 app.get('/api/technologies', routeHandlers.technologies.getAll);
+
 app.get('/api/stats', routeHandlers.stats.getRawStats);
 app.get('/api/stats/:year/:country', routeHandlers.stats.getMonthlyAverages);
+app.get('/api/stats/:year', routeHandlers.stats.getYearlyAverages);
 
 app.use(function(req, res, next) {
   next(createError(404));
