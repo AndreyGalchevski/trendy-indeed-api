@@ -1,7 +1,8 @@
 const puppeteer = require('puppeteer');
 
+const countryController = require('../controllers/countryController');
+const technologyController = require('../controllers/technologyController');
 const DailyStat = require('../models/DailyStat');
-const { countries, technologies } = require('./constants');
 
 const initHeadlessBrowser = async () => {
   const browser = await puppeteer.launch({
@@ -65,20 +66,22 @@ const createUrl = (countryCode, technology) => {
 }
 
 const createNewDailyStat = async page => {
+  const countries = await countryController.getAll();
+  const technologies = await technologyController.getAll();
   let newDailyStat = new DailyStat;
 
   for (let i = 0; i < countries.length; i++) {
-    newDailyStat.countries.push({ code: countries[i], technologies: [] });
+    newDailyStat.countries.push({ code: countries[i].name, technologies: [] });
 
     for (let j = 0; j < technologies.length; j++) {
-      let url = createUrl(countries[i], technologies[j]);
+      let url = createUrl(countries[i].code, technologies[j].name);
       await page.goto(url);
       let jobCountText = await fetchJobCountText(page);
       
       if (!jobCountText) continue;
       
       let jobCount = parseJobCount(jobCountText);
-      newDailyStat.countries[i].technologies.push({ name: technologies[j], jobCount });
+      newDailyStat.countries[i].technologies.push({ name: technologies[j].name, jobCount });
     }
   }
   await newDailyStat.save();

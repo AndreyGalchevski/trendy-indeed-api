@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const dbConfig = require('./config/db');
-const { getRawStats, getMonthlyAverages } = require('./routes/index');
+const routeHandlers = require('./routes/index');
 const scheduler = require('./scheduler/index');
 
 const app = express();
@@ -21,8 +21,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.get('/api/stats', getRawStats);
-app.get('/api/stats/:year/:country', getMonthlyAverages);
+app.post('/api/countries', routeHandlers.countries.create);
+app.get('/api/countries', routeHandlers.countries.getAll);
+app.post('/api/technologies', routeHandlers.technologies.create);
+app.get('/api/technologies', routeHandlers.technologies.getAll);
+app.get('/api/stats', routeHandlers.stats.getRawStats);
+app.get('/api/stats/:year/:country', routeHandlers.stats.getMonthlyAverages);
 
 app.use(function(req, res, next) {
   next(createError(404));

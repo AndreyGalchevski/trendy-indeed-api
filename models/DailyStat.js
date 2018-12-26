@@ -8,7 +8,7 @@ let dailyStatSchema = new Schema({
     default: Date.now
   },
   countries: [{
-    code: String,
+    name: String,
     technologies: [{
       name: String,
       jobCount: Number

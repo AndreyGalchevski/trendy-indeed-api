@@ -1,4 +1,4 @@
-const dailyStatController = require('../controllers/dailyStatController');
+const dailyStatController = require('../../controllers/dailyStatController');
 
 module.exports = async (req, res) => {
   const year = req.params.year;
