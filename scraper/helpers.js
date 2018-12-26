@@ -71,7 +71,7 @@ const createNewDailyStat = async page => {
   let newDailyStat = new DailyStat;
 
   for (let i = 0; i < countries.length; i++) {
-    newDailyStat.countries.push({ code: countries[i].name, technologies: [] });
+    newDailyStat.countries.push({ name: countries[i].name, technologies: [] });
 
     for (let j = 0; j < technologies.length; j++) {
       let url = createUrl(countries[i].code, technologies[j].name);

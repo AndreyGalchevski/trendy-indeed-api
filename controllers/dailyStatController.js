@@ -29,7 +29,7 @@ const getMonthlyAverages = async (year, country) => {
       {
         $project: {
           createdAtMonth: { $month: '$date' },
-          country: '$countries.code',
+          country: '$countries.name',
           technology: '$countries.technologies.name',
           jobCount: '$countries.technologies.jobCount'
         }
