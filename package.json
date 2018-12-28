@@ -1,26 +1,27 @@
 {
   "name": "trendy-indeed-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Trendy Indeed REST API Server",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AndreyGalchevski/trendy-indeed-api.git"
+  },
   "main": "app.js",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node app.js"
   },
   "author": "Andrey Galchevski",
   "license": "ISC",
   "engines": {
-    "node": "8.12.0",
+    "node": "10.15.0",
     "npm": "6.4.1"
   },
   "dependencies": {
-    "cookie-parser": "~1.4.3",
-    "cors": "^2.8.5",
+    "basic-auth": "^2.0.1",
     "dotenv": "^6.1.0",
-    "express": "^4.16.4",
-    "http-errors": "~1.6.2",
     "mongoose": "^5.3.13",
-    "morgan": "~1.9.0",
     "node-schedule": "^1.3.1",
-    "puppeteer": "^1.10.0"
+    "puppeteer": "^1.10.0",
+    "tsscmp": "^1.0.6"
   }
 }

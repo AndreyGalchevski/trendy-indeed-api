@@ -1,46 +1,34 @@
 require('dotenv').config();
 
-const createError = require('http-errors');
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const http = require('http');
+const url = require('url');
 
 const dbConfig = require('./config/db');
-const routeHandlers = require('./routes/index');
+const routes = require('./routes/index');
 const scheduler = require('./scheduler/index');
+const utils = require('./utils/index');
 
-const app = express();
+const port = process.env.PORT || 3000;
 
 dbConfig.connectToDB();
 scheduler.scheduleJob();
 
-app.use(cors());
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+const server = http.createServer(async (req, res) => {
+  utils.authenticate(req, res);
 
-app.post('/api/countries', routeHandlers.countries.create);
-app.get('/api/countries', routeHandlers.countries.getAll);
+  const pathName = url.parse(req.url).pathname;
+  const query = url.parse(req.url, true).query;
+  
+  if (!utils.isEmpty(query)) req.query = query;
+  const route = routes[pathName];
 
-app.post('/api/technologies', routeHandlers.technologies.create);
-app.get('/api/technologies', routeHandlers.technologies.getAll);
+  if (route) {
+    route(req, res);
+  } else {
+    utils.sendResponse(res, 'Not Found', 404);
+  }
+})
 
-app.get('/api/stats', routeHandlers.stats.getRawStats);
-app.get('/api/stats/:year/:country', routeHandlers.stats.getMonthlyAverages);
-app.get('/api/stats/:year', routeHandlers.stats.getYearlyAverages);
-
-app.use(function(req, res, next) {
-  next(createError(404));
+server.listen(port, () => {
+	console.log(`Server live at port ${port}`);
 });
-
-app.use(function(err, req, res, next) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
