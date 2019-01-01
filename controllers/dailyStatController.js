@@ -18,8 +18,8 @@ const getMonthlyAverages = async (year, country) => {
       {
         $match: {
           date: {
-            $gte: new Date(year, 1, 1),
-            $lte: new Date(year, 12, 31)
+            $gte: new Date(year, 0, 1),
+            $lt: new Date(year + 1, 0, 1)
           }
         }
       },
@@ -74,8 +74,8 @@ const getYearlyAverages = async year => {
       {
         $match: {
           date: {
-            $gte: new Date(year, 1, 1),
-            $lte: new Date(year, 12, 31)
+            $gte: new Date(year, 0, 1),
+            $lt: new Date(year + 1, 0, 1)
           }
         }
       },
