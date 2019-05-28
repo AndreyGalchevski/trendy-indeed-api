@@ -3,13 +3,13 @@ const compare = require('tsscmp');
 
 const isEmpty = obj => {
   return JSON.stringify(obj) === JSON.stringify({});
-}
+};
 
 const headers = {
-  "access-control-allow-origin": "*",
-  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "access-control-allow-headers": "content-type, accept",
-  'Content-Type': "application/json"
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'Content-Type': 'application/json'
 };
 
 const sendResponse = (response, data, statusCode) => {
@@ -20,27 +20,30 @@ const sendResponse = (response, data, statusCode) => {
 const collectData = (request, callback) => {
   let body = '';
   request.on('data', chunk => {
-      body += chunk.toString();
+    body += chunk.toString();
   });
   request.on('end', () => {
-      callback(JSON.parse(body));
+    callback(JSON.parse(body));
   });
 };
 
 const checkPassword = (name, pass) => {
-  var valid = true;
+  let valid = true;
 
   valid = compare(name, process.env.USERNAME) && valid;
   valid = compare(pass, process.env.PASSWORD) && valid;
 
   return valid;
-}
+};
 
 const authenticate = (req, res) => {
   const credentials = auth(req);
-  if (req.method === 'POST' && (!credentials || !checkPassword(credentials.name, credentials.pass))) {
+  if (
+    req.method === 'POST' &&
+    (!credentials || !checkPassword(credentials.name, credentials.pass))
+  ) {
     sendResponse(res, 'Access Denied', 401);
   }
-}
+};
 
 module.exports = { isEmpty, sendResponse, collectData, authenticate };

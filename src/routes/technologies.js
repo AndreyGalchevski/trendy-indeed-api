@@ -4,7 +4,7 @@ const utils = require('../utils/index');
 module.exports = async (req, res) => {
   if (req.method === 'GET') {
     try {
-      let technologies = await technologyController.getAll();
+      const technologies = await technologyController.getAll();
       utils.sendResponse(res, technologies, 200);
     } catch (error) {
       utils.sendResponse(res, 'Internal Server Error', 500);
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
   } else if (req.method === 'POST') {
     utils.collectData(req, async data => {
       try {
-        let savedTechnology = await technologyController.create(data);
+        const savedTechnology = await technologyController.create(data);
         utils.sendResponse(res, savedTechnology, 200);
       } catch (error) {
         utils.sendResponse(res, 'Internal Server Error', 500);

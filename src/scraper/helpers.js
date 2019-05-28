@@ -20,30 +20,27 @@ const initHeadlessBrowser = async () => {
   page.setDefaultNavigationTimeout(0);
 
   return { browser, page };
-}
+};
 
 const fetchJobCountText = async page => {
-  let jobCountElement = await page.$('div#searchCount');
-  
+  const jobCountElement = await page.$('div#searchCount');
+
   if (!jobCountElement) return;
 
-  let jobCountText = await page.evaluate(
-    el => el.innerText,
-    jobCountElement
-  );
+  const jobCountText = await page.evaluate(el => el.innerText, jobCountElement);
 
   return jobCountText;
-}
+};
 
 const parseJobCount = jobCountText => {
-  let splitted = jobCountText.split(' ');
-  
+  const splitted = jobCountText.split(' ');
+
   let jobCountString = splitted[splitted.length - 2];
-  
+
   jobCountString = jobCountString.replace(/\u00a0/g, '');
   jobCountString = jobCountString.replace(',', '');
   jobCountString = jobCountString.replace('.', '');
-  
+
   let jobCount;
 
   try {
@@ -53,38 +50,39 @@ const parseJobCount = jobCountText => {
   }
 
   return jobCount;
-}
+};
 
 const createUrl = (countryCode, technology) => {
-  let encodedTechnology = encodeURIComponent(technology);
+  const encodedTechnology = encodeURIComponent(technology);
 
-  let url = countryCode === 'us' 
-    ? `https://www.indeed.com/jobs?q=${encodedTechnology}`
-    : `https://${countryCode}.indeed.com/jobs?q=${encodedTechnology}`;
+  const url =
+    countryCode === 'us'
+      ? `https://www.indeed.com/jobs?q=${encodedTechnology}`
+      : `https://${countryCode}.indeed.com/jobs?q=${encodedTechnology}`;
 
   return url;
-}
+};
 
 const createNewDailyStat = async page => {
   const countries = await countryController.getAll();
   const technologies = await technologyController.getAll();
-  let newDailyStat = new DailyStat;
+  const newDailyStat = new DailyStat();
 
   for (let i = 0; i < countries.length; i++) {
     newDailyStat.countries.push({ name: countries[i].name, technologies: [] });
 
     for (let j = 0; j < technologies.length; j++) {
-      let url = createUrl(countries[i].code, technologies[j].name);
+      const url = createUrl(countries[i].code, technologies[j].name);
       await page.goto(url);
-      let jobCountText = await fetchJobCountText(page);
-      
+      const jobCountText = await fetchJobCountText(page);
+
       if (!jobCountText) continue;
-      
-      let jobCount = parseJobCount(jobCountText);
+
+      const jobCount = parseJobCount(jobCountText);
       newDailyStat.countries[i].technologies.push({ name: technologies[j].name, jobCount });
     }
   }
   await newDailyStat.save();
-}
+};
 
 module.exports = { initHeadlessBrowser, createNewDailyStat };

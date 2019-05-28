@@ -11,7 +11,7 @@ const getRawStats = async () => {
 };
 
 const getMonthlyAverages = async (year, country) => {
-  const countryName = (await Country.findOne({code: country})).name;
+  const countryName = (await Country.findOne({ code: country })).name;
 
   try {
     const stats = await DailyStat.aggregate([
@@ -23,11 +23,11 @@ const getMonthlyAverages = async (year, country) => {
           }
         }
       },
-      { 
-        $unwind: { path: "$countries"} 
-      }, 
-      { 
-        $unwind: { path: "$countries.technologies"} 
+      {
+        $unwind: { path: '$countries' }
+      },
+      {
+        $unwind: { path: '$countries.technologies' }
       },
       {
         $project: {
@@ -39,16 +39,16 @@ const getMonthlyAverages = async (year, country) => {
       },
       {
         $group: {
-          _id: { 
+          _id: {
             $concat: [
-              { $substr:[year, 0, -1 ] }, 
-              '-',              
-              { $substr:["$createdAtMonth", 0, -1 ] }, 
+              { $substr: [year, 0, -1] },
               '-',
-              '$country', 
-              '-', 
-              '$technology' 
-            ] 
+              { $substr: ['$createdAtMonth', 0, -1] },
+              '-',
+              '$country',
+              '-',
+              '$technology'
+            ]
           },
           country: { $first: '$country' },
           technology: { $first: '$technology' },
@@ -79,11 +79,11 @@ const getYearlyAverages = async year => {
           }
         }
       },
-      { 
-        $unwind: { path: "$countries"} 
-      }, 
-      { 
-        $unwind: { path: "$countries.technologies"} 
+      {
+        $unwind: { path: '$countries' }
+      },
+      {
+        $unwind: { path: '$countries.technologies' }
       },
       {
         $project: {
@@ -94,14 +94,8 @@ const getYearlyAverages = async year => {
       },
       {
         $group: {
-          _id: { 
-            $concat: [ 
-              { $substr:[year, 0, -1 ] }, 
-              '-', 
-              '$country', 
-              '-', 
-              '$technology' 
-            ] 
+          _id: {
+            $concat: [{ $substr: [year, 0, -1] }, '-', '$country', '-', '$technology']
           },
           country: { $first: '$country' },
           technology: { $first: '$technology' },

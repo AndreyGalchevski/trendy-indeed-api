@@ -1,0 +1,21 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error",
+    "no-underscore-dangle": "off"
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "assert": true,
+    "after": true,
+    "afterEach": true,
+    "before": true,
+    "beforeEach": true
+  }
+}

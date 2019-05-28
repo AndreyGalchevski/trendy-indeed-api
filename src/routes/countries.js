@@ -4,7 +4,7 @@ const utils = require('../utils/index');
 module.exports = async (req, res) => {
   if (req.method === 'GET') {
     try {
-      let countries = await countryController.getAll();
+      const countries = await countryController.getAll();
       utils.sendResponse(res, countries, 200);
     } catch (error) {
       utils.sendResponse(res, 'Internal Server Error', 500);
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
   } else if (req.method === 'POST') {
     utils.collectData(req, async data => {
       try {
-        let savedCountry = await countryController.create(data);
+        const savedCountry = await countryController.create(data);
         utils.sendResponse(res, savedCountry, 200);
       } catch (error) {
         utils.sendResponse(res, 'Internal Server Error', 500);
