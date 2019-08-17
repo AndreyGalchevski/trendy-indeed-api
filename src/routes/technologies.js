@@ -1,22 +1,16 @@
-const technologyController = require('../controllers/technologyController');
-const utils = require('../utils/index');
+const express = require('express');
 
-module.exports = async (req, res) => {
-  if (req.method === 'GET') {
-    try {
-      const technologies = await technologyController.getAll();
-      utils.sendResponse(res, technologies, 200);
-    } catch (error) {
-      utils.sendResponse(res, 'Internal Server Error', 500);
-    }
-  } else if (req.method === 'POST') {
-    utils.collectData(req, async data => {
-      try {
-        const savedTechnology = await technologyController.create(data);
-        utils.sendResponse(res, savedTechnology, 200);
-      } catch (error) {
-        utils.sendResponse(res, 'Internal Server Error', 500);
-      }
-    });
+const technologyController = require('../controllers/technologyController');
+
+const router = express.Router();
+
+router.get('/', async (req, res) => {
+  try {
+    const technologies = await technologyController.getAll();
+    res.send(technologies);
+  } catch (error) {
+    res.status(500).send(error);
   }
-};
+});
+
+module.exports = router;

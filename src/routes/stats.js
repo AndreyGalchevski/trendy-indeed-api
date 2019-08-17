@@ -1,20 +1,34 @@
+const express = require('express');
+
 const dailyStatController = require('../controllers/dailyStatController');
-const utils = require('../utils/index');
 
-module.exports = async (req, res) => {
-  let stats;
+const router = express.Router();
 
+router.get('/raw', async (req, res) => {
   try {
-    if (!req.query) {
-      stats = await dailyStatController.getRawStats();
-    } else if (req.query.year && req.query.country) {
-      stats = await dailyStatController.getMonthlyAverages(req.query.year, req.query.country);
-    } else if (req.query.year) {
-      stats = await dailyStatController.getYearlyAverages(req.query.year);
-    }
-
-    utils.sendResponse(res, stats, 200);
+    const stats = await dailyStatController.getRawStats();
+    res.send(stats);
   } catch (error) {
-    utils.sendResponse(res, 'Internal Server Error', 500);
+    res.status(500).send(error);
   }
-};
+});
+
+router.get('/monthly', async (req, res) => {
+  try {
+    const stats = await dailyStatController.getMonthlyAverages(req.query.year, req.query.country);
+    res.send(stats);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get('/yearly', async (req, res) => {
+  try {
+    const stats = await dailyStatController.getYearlyAverages(req.query.year);
+    res.send(stats);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+module.exports = router;

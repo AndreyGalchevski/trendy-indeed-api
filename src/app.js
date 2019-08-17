@@ -1,34 +1,22 @@
 require('dotenv').config();
 
-const http = require('http');
-const url = require('url');
+const express = require('express');
 
 const dbConfig = require('./config/db');
-const routes = require('./routes/index');
+const routes = require('./routes');
 const scheduler = require('./scheduler/index');
-const utils = require('./utils/index');
-
-const port = process.env.PORT || 3000;
+const errorHandlingMiddleware = require('./middleware/errorHandlingMiddleware');
 
 dbConfig.connectToDB();
 scheduler.scheduleJob();
 
-const server = http.createServer(async (req, res) => {
-  utils.authenticate(req, res);
+const app = express();
 
-  const pathName = url.parse(req.url).pathname;
-  const { query } = url.parse(req.url, true);
+routes.init(app);
+errorHandlingMiddleware.init(app);
 
-  if (!utils.isEmpty(query)) req.query = query;
-  const route = routes[pathName];
+const port = process.env.PORT || 3000;
 
-  if (route) {
-    route(req, res);
-  } else {
-    utils.sendResponse(res, 'Not Found', 404);
-  }
-});
+app.listen(port);
 
-server.listen(port, () => {
-  console.log(`Server live at port ${port}`);
-});
+console.log(`Server running on port ${port}`);
