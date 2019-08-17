@@ -6,12 +6,14 @@ const dbConfig = require('./config/db');
 const routes = require('./routes');
 const scheduler = require('./scheduler/index');
 const errorHandlingMiddleware = require('./middleware/errorHandlingMiddleware');
+const commonMiddleware = require('./middleware/commonMiddleware');
 
 dbConfig.connectToDB();
 scheduler.scheduleJob();
 
 const app = express();
 
+commonMiddleware.init(app);
 routes.init(app);
 errorHandlingMiddleware.init(app);
 
